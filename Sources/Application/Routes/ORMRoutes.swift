@@ -30,6 +30,7 @@ func initializeORMRoutes(app: App) {
     app.router.post("/object", handler: app.createObject)
     app.router.get("/object", handler: app.findObject)
     app.router.get("/objects/all", handler: app.findObjects)
+    app.router.get("/objects/public", handler: app.findObjectsPublic)
     app.router.get("/objects/user", handler: app.findObjectsForUser(userId:completion:))
     app.router.get("/objects/username", handler: app.findObjectsForUser(username:completion:))
     app.router.put("/object", handler: app.updateObject)
@@ -70,6 +71,10 @@ extension App {
     
     func findObjectsForUser(username: String, completion: @escaping ([Object]?, RequestError?) -> Void) {
         Object.findAllForUser(name: username, completion: completion)
+    }
+    
+    func findObjectsPublic(completion: @escaping ([Object]?, RequestError?) -> Void) {
+        Object.findAllPublic(completion: completion)
     }
     
     func removeObject(id: Int, completion: @escaping (RequestError?) -> Void) {

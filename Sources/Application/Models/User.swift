@@ -8,6 +8,7 @@ struct User: Codable {
     let username: String
     let password: String
     let salt: String
+    let isAdmin: Bool
 }
 
 extension User: Model {

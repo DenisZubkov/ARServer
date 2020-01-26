@@ -8,6 +8,7 @@ struct Object: Codable {
     let userId: Int
     let url: URL
     let date: Date
+    let isPublic: Bool
 }
 
 extension Object: Model {
@@ -23,6 +24,7 @@ extension Object: Model {
         let query = Select(from: objects).where("userId = ?")
         Object.executeQuery(query: query, parameters: [id], completion)
     }
+    
     
     public static func findAllForUser(name: String, completion: @escaping ([Object]?, RequestError?) -> Void) {
         let objects: Table
@@ -53,4 +55,18 @@ extension Object: Model {
             Object.executeQuery(query: query, parameters: userIds, completion)
         }
     }
+    
+    public static func findAllPublic(completion: @escaping ([Object]?, RequestError?) -> Void) {
+        let objects: Table
+        do {
+            objects = try Object.getTable()
+        } catch {
+            Log.error(error.localizedDescription)
+            completion(nil, .internalServerError)
+            return
+        }
+        let query = Select(from: objects).where("isPublic")
+        Object.executeQuery(query: query, completion)
+    }
+    
 }

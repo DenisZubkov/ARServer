@@ -17,7 +17,7 @@ func initializeBasicAuthRoutes(app: App) {
 extension App {
     func basicAuthLogin(user: BasicAuth, respondWith: ([Object]?, RequestError?) -> Void) {
         Log.info("User \(user.id) logged in")
-        let objects = [Object(id: 99, userId: 10, url: URL(string: "https://apple.com")!, date: Date())]
+        let objects = [Object(id: 99, userId: 10, url: URL(string: "https://apple.com")!, date: Date(), isPublic: true)]
         respondWith(objects, nil)
     }
 }
