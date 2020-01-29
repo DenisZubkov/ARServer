@@ -4,11 +4,11 @@ import SwiftKuery
 import SwiftKueryORM
 
 struct Object: Codable {
-    let id: Int?
-    let userId: Int
-    let url: URL
-    let date: Date
-    let isPublic: Bool
+    var id: Int?
+    var userId: Int
+    var url: URL
+    var date: Date
+    var ispublic: Int?
 }
 
 extension Object: Model {
@@ -65,7 +65,7 @@ extension Object: Model {
             completion(nil, .internalServerError)
             return
         }
-        let query = Select(from: objects).where("isPublic")
+        let query = Select(from: objects).where("isPublic = 1")
         Object.executeQuery(query: query, completion)
     }
     

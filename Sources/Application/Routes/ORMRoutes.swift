@@ -6,7 +6,7 @@ import SwiftKueryMySQL
 func initializeORMRoutes(app: App) {
     // Initialize MySQL Database
     let pool = MySQLConnection.createPool(
-        host: "127.0.0.1",
+        host: "78.47.113.172",
         user: "aruser",
         password: "arpassword",
         database: "ardb",
@@ -62,7 +62,8 @@ extension App {
     }
     
     func findObjects(completion: @escaping ([Object]?, RequestError?) -> Void) {
-        Object.findAll(completion)
+        //Object.findAll(completion)
+        Object.findAll(using: Database.default, completion)
     }
     
     func findObjectsForUser(userId: Int, completion: @escaping ([Object]?, RequestError?) -> Void) {
