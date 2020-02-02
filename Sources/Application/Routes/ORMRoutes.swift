@@ -2,6 +2,7 @@ import KituraContracts
 import LoggerAPI
 import SwiftKueryORM
 import SwiftKueryMySQL
+import Foundation
 
 func initializeORMRoutes(app: App) {
     // Initialize MySQL Database
@@ -26,6 +27,9 @@ func initializeORMRoutes(app: App) {
         Log.error("Failed to create table: \(error)")
     }
     
+    // CheckConnect
+    app.router.get("/check", handler: app.checkServer)
+    
     // Initialize Object routes
     app.router.post("/object", handler: app.createObject)
     app.router.get("/object", handler: app.findObject)
@@ -49,6 +53,16 @@ func initializeORMRoutes(app: App) {
     app.router.get("/users/all", handler: app.findUsers)
     app.router.put("/user", handler: app.updateUser)
     app.router.delete("/user", handler: app.removeUser)
+}
+
+//MARK: Check Server Route
+
+extension App {
+    func checkServer(respondWith: ([Object]?, RequestError?) -> Void) {
+        Log.info("Server cheked")
+        let objects = [Object(id: -1, userId: 0, url: URL(string: "https://apple.com")!, date: Date())]
+        respondWith(objects, nil)
+    }
 }
 
 // MARK: - Object Routes

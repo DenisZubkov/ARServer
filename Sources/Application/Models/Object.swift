@@ -6,8 +6,12 @@ import SwiftKueryORM
 struct Object: Codable {
     var id: Int?
     var userId: Int
+    var name: String?
     var url: URL
+    var serverUrl: URL?
     var date: Date
+    var thumbnail: URL?
+    var serverThumbnail: URL?
     var ispublic: Int?
 }
 
