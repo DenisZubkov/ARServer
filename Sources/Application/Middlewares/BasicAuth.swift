@@ -8,18 +8,26 @@
 import CredentialsHTTP
 
 public struct BasicAuth: TypeSafeHTTPBasic {
-    public static let authenticate = ["user": "password"]
+    
+    public var id: String
     
     public static func verifyPassword(username: String, password: String, callback: @escaping (BasicAuth?) -> Void) {
-        if
-            let storedPassword = authenticate[username],
-            storedPassword == password
-        {
-            callback(BasicAuth(id: username))
-        } else {
-            callback(nil)
+        User.findUsername(username: username) { users, error in
+            guard let users = users else {
+                callback(nil)
+                return
+            }
+            for user in users {
+                if user.username == username,
+                user.password == password
+                {
+                    callback(BasicAuth(id: username))
+                } else {
+                    callback(nil)
+                }
+            }
         }
     }
     
-    public var id: String
+    
 }

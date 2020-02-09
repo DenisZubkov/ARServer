@@ -9,8 +9,8 @@ import Kitura
 import KituraContracts
 
 func initializeSessionRoutes(app: App) {
-    app.router.get("/session", handler: app.getSessionHandler)
-    app.router.post("/session", handler: app.postSessionHandler)
+//    app.router.get("/session", handler: app.getSessionHandler)
+//    app.router.post("/session", handler: app.postSessionHandler)
 }
 
 // MARK: - Session Routes

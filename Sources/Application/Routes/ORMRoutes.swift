@@ -31,28 +31,28 @@ func initializeORMRoutes(app: App) {
     app.router.get("/check", handler: app.checkServer)
     
     // Initialize Object routes
-    app.router.post("/object", handler: app.createObject)
-    app.router.get("/object", handler: app.findObject)
-    app.router.get("/objects/all", handler: app.findObjects)
+    app.router.post("/object", handler: app.createObjectProtected(user:object:completion:))
+    app.router.get("/object", handler: app.findObjectProtected(user:id:completion:))
+    app.router.get("/objects/all", handler: app.findObjectsProtected(user:completion:))
     app.router.get("/objects/public", handler: app.findObjectsPublic)
-    app.router.get("/objects/user", handler: app.findObjectsForUser(userId:completion:))
-    app.router.get("/objects/username", handler: app.findObjectsForUser(username:completion:))
-    app.router.put("/object", handler: app.updateObject)
-    app.router.delete("/object", handler: app.removeObject)
+    app.router.get("/objects/user", handler: app.findObjectsForUserProtected(user:userId:completion:))
+    app.router.get("/objects/username", handler: app.findObjectsForUserProtected(user:username:completion:))
+    app.router.put("/object", handler: app.updateObjectProtected(user:id:object:completion:))
+    app.router.delete("/object", handler: app.removeObjectProtected(user:id:completion:))
     
-    // Initiallize Token routes
-    app.router.post("/token", handler: app.createToken)
-    app.router.get("/token", handler: app.findToken)
-    app.router.get("/tokens/all", handler: app.findTokens)
-    app.router.put("/token", handler: app.updateToken)
-    app.router.delete("/token", handler: app.removeToken)
+//    // Initiallize Token routes
+//    app.router.post("/token", handler: app.createToken)
+//    app.router.get("/token", handler: app.findToken)
+//    app.router.get("/tokens/all", handler: app.findTokens)
+//    app.router.put("/token", handler: app.updateToken)
+//    app.router.delete("/token", handler: app.removeToken)
     
     // Initiallize User routes
-    app.router.post("/user", handler: app.createUser)
-    app.router.get("/user", handler: app.findUser)
-    app.router.get("/users/all", handler: app.findUsers)
-    app.router.put("/user", handler: app.updateUser)
-    app.router.delete("/user", handler: app.removeUser)
+    app.router.post("/user", handler: app.createUserProtected(user:userCreate:completion:))
+    app.router.get("/user", handler: app.findUserProtected(user:id:completion:))
+    app.router.get("/users/all", handler: app.findUsersProtected(user:completion:))
+    app.router.put("/user", handler: app.updateUserProtected(id:user:completion:))
+    app.router.delete("/user", handler: app.removeUserProtected(user:id:completion:))
 }
 
 //MARK: Check Server Route
@@ -67,36 +67,36 @@ extension App {
 
 // MARK: - Object Routes
 extension App {
-    func createObject(object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
+    func createObjectProtected(user: BasicAuth, object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
         object.save(completion)
     }
     
-    func findObject(id: Int, completion: @escaping (Object?, RequestError?) -> Void) {
+    func findObjectProtected(user: BasicAuth, id: Int, completion: @escaping (Object?, RequestError?) -> Void) {
         Object.find(id: id, completion)
     }
     
-    func findObjects(completion: @escaping ([Object]?, RequestError?) -> Void) {
+    func findObjectsProtected(user: BasicAuth, completion: @escaping ([Object]?, RequestError?) -> Void) {
         //Object.findAll(completion)
         Object.findAll(using: Database.default, completion)
     }
     
-    func findObjectsForUser(userId: Int, completion: @escaping ([Object]?, RequestError?) -> Void) {
+    func findObjectsForUserProtected(user: BasicAuth, userId: Int, completion: @escaping ([Object]?, RequestError?) -> Void) {
         Object.findAllForUser(id: userId, completion: completion)
     }
     
-    func findObjectsForUser(username: String, completion: @escaping ([Object]?, RequestError?) -> Void) {
+    func findObjectsForUserProtected(user: BasicAuth, username: String, completion: @escaping ([Object]?, RequestError?) -> Void) {
         Object.findAllForUser(name: username, completion: completion)
     }
     
-    func findObjectsPublic(completion: @escaping ([Object]?, RequestError?) -> Void) {
+    func findObjectsPublic(user: BasicAuth, completion: @escaping ([Object]?, RequestError?) -> Void) {
         Object.findAllPublic(completion: completion)
     }
     
-    func removeObject(id: Int, completion: @escaping (RequestError?) -> Void) {
+    func removeObjectProtected(user: BasicAuth, id: Int, completion: @escaping (RequestError?) -> Void) {
         Object.delete(id: id, completion)
     }
     
-    func updateObject(id: Int, object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
+    func updateObjectProtected(user: BasicAuth, id: Int, object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
         guard let objectId = object.id, id == objectId else {
             completion(nil, .notFound)
             return
@@ -106,51 +106,55 @@ extension App {
 }
 
 // MARK: - Token Routes
-extension App {
-    func createToken(token: Token, completion: @escaping (Token?, RequestError?) -> Void) {
-        token.save(completion)
-    }
-    
-    func findToken(id: Int, completion: @escaping (Token?, RequestError?) -> Void) {
-        Token.find(id: id, completion)
-    }
-    
-    func findTokens(completion: @escaping ([Token]?, RequestError?) -> Void) {
-        Token.findAll(completion)
-    }
-    
-    func removeToken(id: Int, completion: @escaping (RequestError?) -> Void) {
-        Token.delete(id: id, completion)
-    }
-    
-    func updateToken(id: Int, token: Token, completion: @escaping (Token?, RequestError?) -> Void) {
-        guard let tokenId = token.id, tokenId == id else {
-            completion(nil, .notFound)
-            return
-        }
-        token.update(id: id, completion)
-    }
-}
+//extension App {
+//    func createToken(token: Token, completion: @escaping (Token?, RequestError?) -> Void) {
+//        token.save(completion)
+//    }
+//
+//    func findToken(id: Int, completion: @escaping (Token?, RequestError?) -> Void) {
+//        Token.find(id: id, completion)
+//    }
+//
+//    func findTokens(completion: @escaping ([Token]?, RequestError?) -> Void) {
+//        Token.findAll(completion)
+//    }
+//
+//    func removeToken(id: Int, completion: @escaping (RequestError?) -> Void) {
+//        Token.delete(id: id, completion)
+//    }
+//
+//    func updateToken(id: Int, token: Token, completion: @escaping (Token?, RequestError?) -> Void) {
+//        guard let tokenId = token.id, tokenId == id else {
+//            completion(nil, .notFound)
+//            return
+//        }
+//        token.update(id: id, completion)
+//    }
+//}
 
 // MARK: - User Routes
 extension App {
-    func createUser(user: User, completion: @escaping (User?, RequestError?) -> Void) {
-        user.save(completion)
+    func createUserProtected(user: BasicAuth, userCreate: User, completion: @escaping (User?, RequestError?) -> Void) {
+        userCreate.save(completion)
     }
     
-    func findUser(id: Int, completion: @escaping (User?, RequestError?) -> Void) {
+    func findUserProtected(user: BasicAuth, id: Int, completion: @escaping (User?, RequestError?) -> Void) {
         User.find(id: id, completion)
     }
     
-    func findUsers(completion: @escaping ([User]?, RequestError?) -> Void) {
+    func findUsernameProtected(user: BasicAuth, username: String, completion: @escaping ([User]?, RequestError?) -> Void) {
+        User.findUsername(username: username, completion: completion)
+    }
+    
+    func findUsersProtected(user: BasicAuth, completion: @escaping ([User]?, RequestError?) -> Void) {
         User.findAll(completion)
     }
     
-    func removeUser(id: Int, completion: @escaping (RequestError?) -> Void) {
+    func removeUserProtected(user: BasicAuth, id: Int, completion: @escaping (RequestError?) -> Void) {
         User.delete(id: id, completion)
     }
     
-    func updateUser(id: Int, user: User, completion: @escaping (User?, RequestError?) -> Void) {
+    func updateUserProtected(id: Int, user: User, completion: @escaping (User?, RequestError?) -> Void) {
         guard let userId = user.id, userId == id else {
             completion(nil, .notFound)
             return
