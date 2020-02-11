@@ -1,9 +1,11 @@
 import Kitura
 import KituraOpenAPI
+import Foundation
 
 public class App {
 
     let router = Router()
+    let baseURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 
     public init() throws {
 

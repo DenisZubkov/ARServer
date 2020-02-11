@@ -30,6 +30,10 @@ func initializeORMRoutes(app: App) {
     // CheckConnect
     app.router.get("/check", handler: app.checkServer)
     
+    // Initialize File routes
+    app.router.post("/file", handler: app.createFileProtected(user:file:completion:))
+    app.router.get("/file", handler: app.findFileProtected(user:userId:completion:))
+
     // Initialize Object routes
     app.router.post("/object", handler: app.createObjectProtected(user:object:completion:))
     app.router.get("/object", handler: app.findObjectProtected(user:id:completion:))
@@ -65,6 +69,46 @@ extension App {
     }
 }
 
+
+// MARK: - File Routes
+extension App {
+    
+    
+    
+    func createFileProtected(user: BasicAuth, file: ObjectFile, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
+        guard let userId = file.userId, let objectId = file.objectId else {
+            completion(nil, .noContent)
+            return
+        }
+        
+        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(userId).appendingPathComponent(objectId).appendingPathExtension("usdz")
+        print(fileURL.absoluteString)
+        do {
+            try file.data?.write(to: fileURL)
+            completion(file,nil)
+        } catch {
+            completion(nil, .badRequest)
+        }
+        
+    }
+    
+    func findFileProtected(user: BasicAuth, fileId: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
+        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(userId).appendingPathComponent(objectId).appendingPathExtension("usdz")
+        var file = ObjectFile()
+        let indexUser = fileId.index(fileId.startIndex, offsetBy: 4)
+        file.userId = fileId.s
+        file.objectId = objectId
+        do {
+            try file.data = Data.init(contentsOf: fileURL)
+            completion(file, nil)
+        } catch {
+            completion(nil, .notFound)
+        }
+    }
+
+}
+
+
 // MARK: - Object Routes
 extension App {
     func createObjectProtected(user: BasicAuth, object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
@@ -74,6 +118,8 @@ extension App {
     func findObjectProtected(user: BasicAuth, id: Int, completion: @escaping (Object?, RequestError?) -> Void) {
         Object.find(id: id, completion)
     }
+    
+    
     
     func findObjectsProtected(user: BasicAuth, completion: @escaping ([Object]?, RequestError?) -> Void) {
         //Object.findAll(completion)
