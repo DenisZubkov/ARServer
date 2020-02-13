@@ -32,7 +32,7 @@ func initializeORMRoutes(app: App) {
     
     // Initialize File routes
     app.router.post("/file", handler: app.createFileProtected(user:file:completion:))
-    app.router.get("/file", handler: app.findFileProtected(user:userId:completion:))
+    app.router.get("/file", handler: app.findFileProtected(user:fileId:completion:))
 
     // Initialize Object routes
     app.router.post("/object", handler: app.createObjectProtected(user:object:completion:))
@@ -89,20 +89,22 @@ extension App {
         } catch {
             completion(nil, .badRequest)
         }
-        
     }
     
     func findFileProtected(user: BasicAuth, fileId: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
-        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(userId).appendingPathComponent(objectId).appendingPathExtension("usdz")
+        
         var file = ObjectFile()
         let indexUser = fileId.index(fileId.startIndex, offsetBy: 4)
-        file.userId = fileId.s
-        file.objectId = objectId
-        do {
-            try file.data = Data.init(contentsOf: fileURL)
-            completion(file, nil)
-        } catch {
-            completion(nil, .notFound)
+        file.userId = String(fileId.prefix(upTo: indexUser))
+        file.objectId = String(fileId.suffix(from: indexUser))
+        if let userId = file.userId, let objectId = file.objectId {
+            let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(userId).appendingPathComponent(objectId).appendingPathExtension("usdz")
+            do {
+                try file.data = Data.init(contentsOf: fileURL)
+                completion(file, nil)
+            } catch {
+                completion(nil, .notFound)
+            }
         }
     }
 
@@ -134,7 +136,7 @@ extension App {
         Object.findAllForUser(name: username, completion: completion)
     }
     
-    func findObjectsPublic(user: BasicAuth, completion: @escaping ([Object]?, RequestError?) -> Void) {
+    func findObjectsPublic(completion: @escaping ([Object]?, RequestError?) -> Void) {
         Object.findAllPublic(completion: completion)
     }
     
