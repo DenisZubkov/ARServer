@@ -32,7 +32,7 @@ func initializeORMRoutes(app: App) {
     
     // Initialize File routes
     app.router.post("/file", handler: app.createFileProtected(user:file:completion:))
-    app.router.get("/file", handler: app.findFileProtected(user:fileId:completion:))
+    app.router.get("/file", handler: app.findFileProtected(user:filename:completion:))
 
     // Initialize Object routes
     app.router.post("/object", handler: app.createObjectProtected(user:object:completion:))
@@ -76,12 +76,12 @@ extension App {
     
     
     func createFileProtected(user: BasicAuth, file: ObjectFile, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
-        guard let userId = file.userId, let objectId = file.objectId else {
+        guard let filename = file.filename else {
             completion(nil, .noContent)
             return
         }
         
-        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(userId).appendingPathComponent(objectId).appendingPathExtension("usdz")
+        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
         print(fileURL.absoluteString)
         do {
             try file.data?.write(to: fileURL)
@@ -91,20 +91,16 @@ extension App {
         }
     }
     
-    func findFileProtected(user: BasicAuth, fileId: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
+    func findFileProtected(user: BasicAuth, filename: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
         
         var file = ObjectFile()
-        let indexUser = fileId.index(fileId.startIndex, offsetBy: 4)
-        file.userId = String(fileId.prefix(upTo: indexUser))
-        file.objectId = String(fileId.suffix(from: indexUser))
-        if let userId = file.userId, let objectId = file.objectId {
-            let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(userId).appendingPathComponent(objectId).appendingPathExtension("usdz")
-            do {
-                try file.data = Data.init(contentsOf: fileURL)
-                completion(file, nil)
-            } catch {
-                completion(nil, .notFound)
-            }
+        file.filename = filename
+        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
+        do {
+            try file.data = Data.init(contentsOf: fileURL)
+            completion(file, nil)
+        } catch {
+            completion(nil, .notFound)
         }
     }
 
