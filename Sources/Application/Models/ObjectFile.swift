@@ -12,5 +12,6 @@ import SwiftKueryORM
 
 struct ObjectFile: Codable {
     var filename: String?
-    var data: Data?
+    var fileData: Data?
+    var thumbnailData: Data?
 }

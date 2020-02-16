@@ -62,10 +62,10 @@ func initializeORMRoutes(app: App) {
 //MARK: Check Server Route
 
 extension App {
-    func checkServer(respondWith: ([Object]?, RequestError?) -> Void) {
+    func checkServer(respondWith: ([User]?, RequestError?) -> Void) {
         Log.info("Server cheked")
-        let objects = [Object(id: -1, userId: 0, url: URL(string: "https://apple.com")!, date: Date())]
-        respondWith(objects, nil)
+        let users = [User(id: 0, username: "admin", password: "admin", salt: "", isadmin: 1)]
+        respondWith(users, nil)
     }
 }
 
@@ -84,24 +84,37 @@ extension App {
         let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
         print(fileURL.absoluteString)
         do {
-            try file.data?.write(to: fileURL)
-            completion(file,nil)
+            try file.fileData?.write(to: fileURL)
         } catch {
             completion(nil, .badRequest)
         }
+        let thumbnailURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("png")
+        print(thumbnailURL.absoluteString)
+        do {
+            try file.thumbnailData?.write(to: thumbnailURL)
+        } catch {
+            completion(nil, .badRequest)
+        }
+        completion(file, nil)
     }
     
     func findFileProtected(user: BasicAuth, filename: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
         
-        var file = ObjectFile()
-        file.filename = filename
+        var objectFile = ObjectFile()
+        objectFile.filename = filename
         let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
         do {
-            try file.data = Data.init(contentsOf: fileURL)
-            completion(file, nil)
+            try objectFile.fileData = Data.init(contentsOf: fileURL)
         } catch {
             completion(nil, .notFound)
         }
+        let thumbnailURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("png")
+        do {
+            try objectFile.thumbnailData = Data.init(contentsOf: thumbnailURL)
+        } catch {
+            completion(nil, .notFound)
+        }
+        completion(objectFile, nil)
     }
 
 }
