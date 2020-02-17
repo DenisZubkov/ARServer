@@ -40,30 +40,9 @@ Example of ARServer with Swift 5 and MySQL 8
   docker run --name ARServer -p8088:8088 -d -w/ARServer arserver swift run -c release
   ```
   
-* Create new user
-  ```bash
-  curl -X POST \
-      localhost:8080/user \
-      -H 'content-type: application/json' \
-      -d '{
-        "username": "John Smith",
-        "password": "johnsmith5",
-        "salt": ""
-    }'
+* API 
+    ```Safari
+    http://127.0.0.1:8088/openapi/ui
   ```
-  
-  * Get all users: http://localhost:8080/user
-  
-* Create new object
-  ```bash
-  curl -X POST \
-      localhost:8080/object \
-      -H 'content-type: application/json' \
-      -d '{
-        "user": "John Smith",
-        "url": "https://apple.com",
-        "date": 105285600
-    }'
-  ```
-  
-  * Get all objects: http://localhost:8080/object
+    
+
