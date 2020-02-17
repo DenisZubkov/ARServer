@@ -125,26 +125,26 @@ extension App {
         var objectFile = ObjectFile()
         objectFile.filename = filename
         let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
-        if FileManager.default.fileExists(atPath: fileURL.absoluteString) {
+        if FileManager.default.fileExists(atPath: fileURL.path) {
             do {
-                try FileManager.default.removeItem(atPath: fileURL.absoluteString)
+                try FileManager.default.removeItem(atPath: fileURL.path)
             } catch {
-                completion(.notAcceptable)
+                print("Can't remove file \(filename).uszd")
             }
         } else {
-            completion(.notFound)
+             print("Can't remove file \(filename).uszd")
         }
         let thumbnailURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("png")
-        if FileManager.default.fileExists(atPath: thumbnailURL.absoluteString) {
+        if FileManager.default.fileExists(atPath: thumbnailURL.path) {
             do {
-                try FileManager.default.removeItem(atPath: thumbnailURL.absoluteString)
+                try FileManager.default.removeItem(atPath: thumbnailURL.path)
             } catch {
-                completion(.notAcceptable)
+                print("Can't remove file \(filename).png")
             }
         } else {
-            completion(.notFound)
+            print("Can't remove file \(filename).png")
         }
-        completion(nil)
+        completion(.ok)
     }
 
 }
@@ -238,7 +238,11 @@ extension App {
     }
     
     func removeUserProtected(user: BasicAuth, id: Int, completion: @escaping (RequestError?) -> Void) {
-        User.delete(id: id, completion)
+        if id != 0  {
+            User.delete(id: id, completion)
+        } else {
+            completion(.badRequest)
+        }
     }
     
     func updateUserProtected(id: Int, user: User, completion: @escaping (User?, RequestError?) -> Void) {
