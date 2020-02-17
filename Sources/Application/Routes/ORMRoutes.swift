@@ -77,7 +77,6 @@ extension App {
     
     
     func createFileProtected(user: BasicAuth, file: ObjectFile, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
-        createUSDZDirectory()
         guard let filename = file.filename else {
             completion(nil, .noContent)
             return
