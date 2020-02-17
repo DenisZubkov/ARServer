@@ -12,7 +12,7 @@ public class App {
     }
 
     func postInit() throws {
-        createUSDZDirectory()
+        //createUSDZDirectory()
         initializeBasicAuthRoutes(app: self)
         initializeJWTAuthRoutes(app: self)
         initializeOAuth2Routes(app: self)
