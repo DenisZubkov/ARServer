@@ -33,6 +33,7 @@ func initializeORMRoutes(app: App) {
     // Initialize File routes
     app.router.post("/file", handler: app.createFileProtected(user:file:completion:))
     app.router.get("/file", handler: app.findFileProtected(user:filename:completion:))
+    app.router.delete("/file", handler: app.removeFileProtected(user:filename:completion:))
 
     // Initialize Object routes
     app.router.post("/object", handler: app.createObjectProtected(user:object:completion:))
@@ -98,6 +99,8 @@ extension App {
         completion(file, nil)
     }
     
+    
+    
     func findFileProtected(user: BasicAuth, filename: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
         
         var objectFile = ObjectFile()
@@ -115,6 +118,33 @@ extension App {
             completion(nil, .notFound)
         }
         completion(objectFile, nil)
+    }
+    
+    
+    func removeFileProtected(user: BasicAuth, filename: String, completion: @escaping (RequestError?) -> Void) {
+        var objectFile = ObjectFile()
+        objectFile.filename = filename
+        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
+        if FileManager.default.fileExists(atPath: fileURL.absoluteString) {
+            do {
+                try FileManager.default.removeItem(atPath: fileURL.absoluteString)
+            } catch {
+                completion(.notAcceptable)
+            }
+        } else {
+            completion(.notFound)
+        }
+        let thumbnailURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("png")
+        if FileManager.default.fileExists(atPath: thumbnailURL.absoluteString) {
+            do {
+                try FileManager.default.removeItem(atPath: thumbnailURL.absoluteString)
+            } catch {
+                completion(.notAcceptable)
+            }
+        } else {
+            completion(.notFound)
+        }
+        completion(nil)
     }
 
 }
