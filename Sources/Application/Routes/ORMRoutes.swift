@@ -21,7 +21,10 @@ func initializeORMRoutes(app: App) {
         try Object.createTableSync()
         try Token.createTableSync()
         try User.createTableSync()
-        
+        let user = User(id: 0, username: "admin", password: "admin", salt: "", isadmin: 1)
+        user.save() { user, requestError in
+            print(requestError?.body)
+        }
         Log.info("All tables created")
     } catch {
         Log.error("Failed to create table: \(error)")

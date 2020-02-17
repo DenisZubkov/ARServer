@@ -10,7 +10,6 @@ Example of ARServer with Swift 5 and MySQL 8
   create user aruser@'%' identified by 'arpassword';
   grant all privileges on ardb.* to aruser@'%';
   flush privileges;
-  INSERT INTO ardb.Users (id, username, password, salt, isadmin) VALUES(0, 'admin', 'admin', '', 1);
   quit
   ```
   
