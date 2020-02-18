@@ -1,6 +1,6 @@
 # ARServer
 
-Example of ARServer with Swift 5 and MySQL 8
+API Server for APPLE Augmented Reality Models (USDZ)
 
 * Start MySQL Server in Docker
   ```bash
