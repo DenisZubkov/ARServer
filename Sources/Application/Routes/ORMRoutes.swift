@@ -39,6 +39,8 @@ func initializeORMRoutes(app: App) {
     // Initialize File routes
     app.router.post("/file", handler: app.createFileProtected(user:file:completion:))
     app.router.get("/file", handler: app.findFileProtected(user:filename:completion:))
+    app.router.get("/image", handler: app.findImageProtected(user:filename:completion:))
+    app.router.get("/Model", handler: app.findModelProtected(user:filename:completion:))
     app.router.delete("/file", handler: app.removeFileProtected(user:filename:completion:))
 
     // Initialize Object routes
@@ -80,6 +82,8 @@ extension App {
 // MARK: - File Routes
 extension App {
     
+    
+    // MARK: - File, Image, Model Routes
     
     
     func createFileProtected(user: BasicAuth, file: ObjectFile, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
@@ -126,6 +130,32 @@ extension App {
         completion(objectFile, nil)
     }
     
+    func findImageProtected(user: BasicAuth, filename: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
+        
+        var objectFile = ObjectFile()
+        objectFile.filename = filename
+        let thumbnailURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("png")
+        do {
+            try objectFile.thumbnailData = Data.init(contentsOf: thumbnailURL)
+        } catch {
+            completion(nil, .notFound)
+        }
+        completion(objectFile, nil)
+    }
+    
+    func findModelProtected(user: BasicAuth, filename: String, completion: @escaping (ObjectFile?, RequestError?) -> Void) {
+        
+        var objectFile = ObjectFile()
+        objectFile.filename = filename
+        let fileURL = self.baseURL.appendingPathComponent("usdz").appendingPathComponent(filename).appendingPathExtension("usdz")
+        do {
+            try objectFile.fileData = Data.init(contentsOf: fileURL)
+        } catch {
+            completion(nil, .notFound)
+        }
+        completion(objectFile, nil)
+    }
+    
     
     func removeFileProtected(user: BasicAuth, filename: String, completion: @escaping (RequestError?) -> Void) {
         var objectFile = ObjectFile()
@@ -157,6 +187,7 @@ extension App {
 
 
 // MARK: - Object Routes
+
 extension App {
     func createObjectProtected(user: BasicAuth, object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
         object.save(completion)
