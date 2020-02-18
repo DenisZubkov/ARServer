@@ -190,6 +190,7 @@ extension App {
 
 extension App {
     func createObjectProtected(user: BasicAuth, object: Object, completion: @escaping (Object?, RequestError?) -> Void) {
+        
         object.save(completion)
     }
     
